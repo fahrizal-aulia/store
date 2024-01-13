@@ -45,7 +45,7 @@ $_SESSION["favcolor"] = "green";
                     <th>Jumlah</th>
                     <th>Harga</th>
                     <th>Status</th>
-                    <th>keranjang</th>
+                    <th class="text-center">keranjang</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -62,24 +62,24 @@ $_SESSION["favcolor"] = "green";
                     <td><?php echo $d['jumlah']; ?></td>
                     <td><?php echo $d['harga']; ?></td>
                     <td><?php echo $d['status']; ?></td>
-                    <td>
+                    <td style="width: 32%;">
                         <form method="POST" action="tambah_keranjang.php?id=<?php echo $d['id']; ?>">
-                            <div class="row w-auto">
-                                <div class="col-3">
+                            <div class="row">
+                                <div class="col-4">
                                     <input type="number" value="1" name="jumlah_brg" class="form-control">
                                 </div>
-                                <div class="col-7" style="margin-right: -10px;">
+                                <div class="col-8" style="margin-right: -5px;">
                                     <button class="btn btn-primary" type="submit"><i class="bi bi-cart"></i> Tambah ke Keranjang</button>
                                 </div>
                             </div>
                         </form>
                     </td>
-				    <td>
-				        <div class="btn-group" role="group">
-				            <a href="edit.php?id=<?php echo $d['id']; ?>" class="btn btn-warning mr-2">EDIT</a>
-				            <a href="hapus.php?id=<?php echo $d['id']; ?>" class="btn btn-danger">HAPUS</a>
-				        </div>
-				    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="edit.php?id=<?php echo $d['id']; ?>" class="btn btn-warning mr-2">EDIT</a>
+                            <a href="hapus.php?id=<?php echo $d['id']; ?>" class="btn btn-danger">HAPUS</a>
+                        </div>
+                    </td>
                 </tr>
                 <?php 
             }

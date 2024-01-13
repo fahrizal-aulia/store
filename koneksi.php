@@ -16,7 +16,7 @@ if ($koneksi->connect_error) {
     $result = $koneksi->query($query);
     $result1 = $koneksi->query($query1);
 
-    return $koneksi;
+    
 }
 
 

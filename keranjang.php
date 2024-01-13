@@ -2,8 +2,8 @@
 include('koneksi.php'); 
 session_start();
 if (!empty($_POST)) {
-    foreach ($_POST['qty'] as $id => $jumlah) {
-        $_SESSION['keranjang'][$id] = max($jumlah, 1);
+    foreach ($_POST['jumlah_brg'] as $id => $jumlah_brg) {
+        $_SESSION['keranjang'][$id] = max($jumlah_brg, 1);
     }
 
     header('Location: keranjang.php');
@@ -39,6 +39,7 @@ if (!empty($_POST)) {
     </nav>
 
     <div class="container mt-4">
+        <form action="" method="post">
         <h1>Daftar Produk</h1>
         <table class="table table-bordered mt-3">
             <h2>CRUD STORE</h2>
@@ -49,49 +50,51 @@ if (!empty($_POST)) {
                     <th>Produk</th>
                     <th>Jumlah</th>
                     <th>Harga</th>
-                    <th>Status</th>
-                    <th>keranjang</th>
+                    <th>Total Harga</th>
                     <th>Action</th>
                 </tr>
             </thead>
-
+            <tbody>
             <?php 
             $koneksi = mysqli_connect("localhost", "root", "", "store");
-            $query = 'SELECT * FROM tbl_products WHERE id IN (';
             $idProduk = array_keys($_SESSION['keranjang']);
-            $query .= implode(',', array_fill(0, count($idProduk), '?'));
-            $query .= ')';
-            
+            $query = 'SELECT tbl_products.*, tbl_category_product.nama_category FROM tbl_products INNER JOIN tbl_category_product ON tbl_products.id_category = tbl_category_product.id WHERE tbl_products.id IN (' . implode(',', array_fill(0, count($idProduk), '?')) . ')';
             $queery = $koneksi->prepare($query);
-            $types = str_repeat('i', count($idProduk));
-            $queery->bind_param($types, ...$idProduk);
+            $queery->bind_param(str_repeat('i', count($idProduk)), ...$idProduk);
             $queery->execute();
-
             $result = $queery->get_result();
-
-            if (!$result) {
-                die('Error fetching results: ' . $koneksi->error);
-            }
-
             $total = 0;
-            $jumlah = 0;
+            $no = 1;
             while ($produk = $result->fetch_assoc()) {
+                        $total += $produk['harga'] * $_SESSION['keranjang'][$produk['id']];
+                        
             ?>
-
                 <tr>
-                    <td><?php echo htmlentities($produk['id']) ?></td>
-                    <td><input type="number" value="<?php echo $_SESSION['keranjang'][$produk['id']];?>" class="form-control w-auto"></td>
+                    <td><?php echo ($produk['id']) ?></td>
+                    <td><?php echo ($produk['nama_category']) ?></td>
+                    <td><?php echo ($produk['product']) ?></td>
+                    <td><input type="number" name="jumlah_brg[<?php echo $produk['id'];?>]" value="<?php echo $_SESSION['keranjang'][$produk['id']];?>" class="form-control w-auto"></td>
                     <td><?php echo number_format($produk['harga'],0,',','.'); ?></td>
                     <td><?php echo number_format($produk['harga'] * $_SESSION['keranjang'][$produk['id']] ,0,',','.'); ?></td>
                     
                     <td>
-                        <a href="#">Hapus</a>
+                        <a href="hapus_keranjang.php?id=<?php echo $produk['id']; ?>" onclick="return confirm ('Apakah anda yakin menghapus produk ini ? ')">Hapus</a>
                     </td>
                 
                 </tr>
             <?php } ?>
-        
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" class="text-right">Total</td>
+                    <td class="text-right h4 text-success">Rp <?php echo number_format($total,0,',','.'); ?></td>
+                </tr>
+            </tfoot>
         </table>
+        <div class="text-right">
+                <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+        </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
